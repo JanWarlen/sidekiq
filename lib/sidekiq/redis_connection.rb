@@ -15,16 +15,16 @@ module Sidekiq
         end
 
         size = if symbolized_options[:size]
-          symbolized_options[:size]
-        elsif Sidekiq.server?
-          # Give ourselves plenty of connections.  pool is lazy
-          # so we won't create them until we need them.
-          Sidekiq.options[:concurrency] + 5
-        elsif ENV["RAILS_MAX_THREADS"]
-          Integer(ENV["RAILS_MAX_THREADS"])
-        else
-          5
-        end
+                 symbolized_options[:size]
+               elsif Sidekiq.server?
+                 # Give ourselves plenty of connections.  pool is lazy
+                 # so we won't create them until we need them.
+                 Sidekiq.options[:concurrency] + 5
+               elsif ENV["RAILS_MAX_THREADS"]
+                 Integer(ENV["RAILS_MAX_THREADS"])
+               else
+                 5
+               end
 
         verify_sizing(size, Sidekiq.options[:concurrency]) if Sidekiq.server?
 
@@ -52,7 +52,7 @@ module Sidekiq
 
       def build_client(options)
         namespace = options[:namespace]
-
+        namespace ||= ENV.fetch("REDIS_NAMESPACE", nil)
         client = Redis.new client_opts(options)
         if namespace
           begin
